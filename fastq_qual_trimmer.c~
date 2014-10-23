@@ -225,6 +225,7 @@ void trim_read( Read * read, int qual_thresh)
 	strcpy(read->qual,quality);
 	free(sequence);
 	free(quality);
+	return;
 }
 void trim_window_read( Read * read, int qual_thresh, int window_size){
 	int start_idx=0;
@@ -238,6 +239,11 @@ void trim_window_read( Read * read, int qual_thresh, int window_size){
 	int sum_of_q;
 	int stop_start_check=0;
 	int stop_end_check=0;
+	//printf("%s\n",read->seq);
+	if ((last_idx+1) < window_size){
+		window_size=last_idx+1;
+	}
+	//printf("%d\n",window_size);
 	for (i = 0; i <=(last_idx-window_size-1); ++i){
 		sum_of_q=0;
 		for (j=i; j<=i+window_size-1; ++j){
