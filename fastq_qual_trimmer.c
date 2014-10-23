@@ -260,7 +260,7 @@ void trim_window_read( Read * read, int qual_thresh, int window_size){
         }
 	}
    //If read is below qual threshold
-    if(stop_end_check==0 && stop_start_check==0){
+    if(stop_end_check==0 && stop_start_check==0 || start_idx > end_idx){
         read->seq[0]='\0';
         read->qual[0]='\0';
         return;
