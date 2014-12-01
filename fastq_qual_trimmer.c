@@ -9,6 +9,7 @@ typedef struct Reads
 	char * plus;
 	char * qual;
 } Read;
+void hmply_filter(Read * read, int hmply_thresh);
 void mean_qual_filter(Read * read, int qual_thresh);
 void trim_read( Read * read, int qual);
 void trim_window_read( Read * read, int qual_thresh, int window_size);
@@ -23,8 +24,9 @@ int main (int argc, char *argv[])
 	int both = 0;
 	int window_size = 5;
 	int mean_q_thresh = 0;
+	int hmply_len=0;
 	char * opt_fastq_name = NULL;
-	while((opt = getopt(argc, argv, "i:hq:l:wbs:m:")) != -1){
+	while((opt = getopt(argc, argv, "i:hq:l:wbs:m:H:")) != -1){
 		switch(opt){
 			case 'i':
 			opt_fastq_name=optarg;
@@ -46,6 +48,9 @@ int main (int argc, char *argv[])
 			break;
 			case 'm':
 			mean_q_thresh = atoi(optarg);
+			break;
+			case 'H':
+			hmply_len = atoi(optarg);
 			break;
 			case 'h':
 			print_help=1;
@@ -171,6 +176,9 @@ int main (int argc, char *argv[])
 				trim_window_read(&read,quality_threshold,window_size);
 			} else {
 				trim_read(&read,quality_threshold);
+			}
+			if (hmply_len > 0){
+				hmply_filter(&read, hmply_len);
 			}
 			mean_qual_filter(&read,mean_q_thresh);
 			int read_len=strlen(read.seq);
@@ -302,6 +310,44 @@ void mean_qual_filter(Read * read, int qual_thresh){
 	}
 }
 
+//filter read if there is a homopolymer larger or equal to a threshold
+void hmply_filter(Read * read, int hmply_thresh){
+	int hmply_start = 0;
+	int hmply_length = 1;
+	int max_hmply_length = 1;
+	char * sequence;
+	char * quality;
+	int seq_len = strlen(read->seq);
+	int last_idx=seq_len - 1;
+	int i;
+	//printf("------------------------\n");
+	for (i=0; i<=last_idx-1; ++i){
+		if (read->seq[i]==read->seq[i+1]){
+			hmply_start = 1;
+		} else {
+			hmply_start = 0;
+		}
+		if (hmply_start == 1){
+			++hmply_length;
+			if (hmply_length > max_hmply_length){
+				max_hmply_length = hmply_length;
+			}
+		} else {
+			hmply_length=1;
+		}
+		//printf("%c\t%c\t%d\t%d\n",read->seq[i], read->seq[i+1], hmply_length, max_hmply_length);
+	}
+    if( max_hmply_length >= hmply_thresh ){
+        sequence = malloc((2)*sizeof(char));
+        quality = malloc((2)*sizeof(char));
+        sequence[0]='\0';
+        quality[0]='\0';
+        strcpy(read->seq,sequence);
+        strcpy(read->qual,quality);
+        free(sequence);
+        free(quality);
+    }
+}
 void free_read(Read * read){
 	free(read->seq);
 	free(read->qual);
