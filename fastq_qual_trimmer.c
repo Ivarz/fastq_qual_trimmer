@@ -77,7 +77,8 @@ int main (int argc, char *argv[])
 		"\t\t-l INT: minimal read length threshold [1]\n"
 		"\t\t-w: use sliding window trimming\n"
 		"\t\t-s INT: sliding window size [5]\n"
-		"\t\t-b: use sliding window and after that - default trimming\n");
+		"\t\t-b: use sliding window and after that - default trimming\n"
+		"\t\t-H INT: reads with homopolymers with length INT or higher will be filtered. Use 0 to switch off [0]\n");
 		return 0;
 	}
 	int character;
