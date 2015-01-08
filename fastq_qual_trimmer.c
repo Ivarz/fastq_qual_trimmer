@@ -189,7 +189,7 @@ int main (int argc, char *argv[])
 			is_read_parsed=0;
 		}
 	}
-	//free_read(&read);
+	free_read(&read);
 	free(tmp);
 	fclose(fp);
 	return 0;
@@ -351,7 +351,8 @@ void hmply_filter(Read * read, int hmply_thresh){
 }
 void free_read(Read * read){
 	free(read->seq);
-	free(read->qual);
+	//free(read->qual);	//Causes double free or memory corruption
 	free(read->plus);
 	free(read->id);
+	//free(read);	//Causes double free or memory corruption
 }
