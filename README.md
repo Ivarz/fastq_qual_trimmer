@@ -5,7 +5,7 @@ homopolymer count.
 ##Installation
 To install on Unix systems with git, type:
 ```
-git clone https://github.com/Ivarz/fastq_qual_trimmer
+git clone https://github.com/ivars-silamikelis/fastq_qual_trimmer
 cd fastq_qual_trimmer
 make
 ```
